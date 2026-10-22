@@ -220,4 +220,43 @@ export class AuthModal {
     await this.enterPassword(password);
     await this.submitLogin();
   }
+
+  /**
+   * Create an account from an ALREADY-OPEN modal (opened by the paywall's
+   * "Get Access" rather than the top-bar trigger): lookup an unknown email →
+   * register view → confirm email, password, username, terms → SIGN UP.
+   * Resolves once the modal has closed (the session is live).
+   */
+  async registerFromOpenModal(account: {
+    email: string;
+    password: string;
+    name: string;
+  }): Promise<void> {
+    await this.waitForOpen();
+    await this.enterEmail(account.email);
+    await this.submitEmail();
+    await this.registerViewTitle.waitFor({ state: 'visible', timeout: 45_000 });
+    await this.registerConfirmEmailInput.fill(account.email);
+    await this.registerPasswordInput.fill(account.password);
+    await this.registerNameInput.fill(account.name);
+    // The checkbox input is visually hidden; its wrapping <label> takes the click.
+    await this.registerTermsCheckbox.locator('xpath=..').click();
+    await expect(this.registerTermsCheckbox).toBeChecked();
+    await this.registerSubmitButton.click();
+    await this.root.waitFor({ state: 'hidden', timeout: 45_000 });
+  }
+
+  /**
+   * Log in from an ALREADY-OPEN modal (e.g. the paywall's "Already
+   * purchased? Log in"). Resolves once the modal has closed.
+   */
+  async loginFromOpenModal(email: string, password: string): Promise<void> {
+    await this.waitForOpen();
+    await this.enterEmail(email);
+    await this.submitEmail();
+    await this.passwordInput.waitFor({ state: 'visible', timeout: 45_000 });
+    await this.enterPassword(password);
+    await this.submitLogin();
+    await this.root.waitFor({ state: 'hidden', timeout: 45_000 });
+  }
 }
