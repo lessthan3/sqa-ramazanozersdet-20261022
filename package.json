@@ -1,0 +1,27 @@
+{
+  "name": "@maestro_io/senior-qa-challenge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Maestro senior QA take-home: Playwright + Patchright E2E framework. Build tests for admin-configured entitlements on a video page paywall.",
+  "scripts": {
+    "test": "patchright test",
+    "test:fast": "HEADED=0 SLOWMO=0 PW_WORKERS=50% patchright test",
+    "test:debug": "PWDEBUG=1 patchright test",
+    "test:report": "patchright show-report reports/html",
+    "test:setup": "patchright test --project=setup",
+    "test:smoke": "patchright test tests/smoke",
+    "test:paywall": "patchright test tests/paywall --project=chromium-admin --workers=1",
+    "typecheck": "tsc --noEmit",
+    "codegen": "patchright codegen --channel=chrome $BASE_URL"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0",
+    "@types/node": "^25.9.1",
+    "dotenv": "^17.4.2",
+    "patchright": "^1.60.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9"
+  }
+}
