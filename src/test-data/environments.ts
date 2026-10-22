@@ -19,6 +19,19 @@ export interface RoleAccount {
   email: string;
 }
 
+/**
+ * The paywalled video page under test. Provided by the interviewer; every
+ * spec reaches it through src/utils/videoPage.ts, never a literal URL.
+ */
+export interface VideoPageUnderTest {
+  /** Video id — the trailing `/v/<id>` segment and the caniplay path key. */
+  videoId: string;
+  /** Video title — the checkout shows it as the product name. */
+  title: string;
+  /** Currency the site prices in (checkout renders `EUR €7.37`). */
+  currency: string;
+}
+
 /** One environment's committed test data. */
 export interface TestEnvironment {
   /** Site URL including the channel path segment. */
@@ -32,6 +45,7 @@ export interface TestEnvironment {
    * resolveApiHost(). Set it only when a host breaks that mapping.
    */
   apiHost?: string;
+  videoPage: VideoPageUnderTest;
   accounts: {
     admin: RoleAccount;
     viewer: RoleAccount;
@@ -66,6 +80,12 @@ export const environments = {
     baseUrl: 'https://dev.web.maestro.io/barbara-paxico',
     siteId: '6018a870f23c26002e185161',
     siteSlug: 'barbara-paxico',
+    // Paywall challenge target (interviewer-provided, 2026-10-22).
+    videoPage: {
+      videoId: '6a036b749a999d97198446a9',
+      title: 'androidpauses.mp4',
+      currency: 'EUR',
+    },
     accounts: barbaraPaxicoAccounts,
   },
 } satisfies Record<string, TestEnvironment>;

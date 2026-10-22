@@ -42,6 +42,16 @@ async function loginViaUiAndDump(
   password: string,
   marker: string,
 ): Promise<void> {
+  // Both setup tests share one persistent worker context, so the admin
+  // session is still live when the viewer logs in — no "Log in" trigger
+  // renders and AuthModal.open() times out. Start each role from a clean
+  // session (consent is re-seeded by the context's init script).
+  // The first navigation only needs the origin (localStorage is per-origin),
+  // so stop at 'commit' — a second full 'load' doubles exposure to dev's
+  // occasional never-firing load event (seen 2026-10-22: reload hung 60s).
+  await page.context().clearCookies();
+  await page.goto(env.BASE_URL, { waitUntil: 'commit' });
+  await page.evaluate(() => localStorage.clear());
   await page.goto(env.BASE_URL);
   await new CookieBanner(page).dismissIfPresent();
 
